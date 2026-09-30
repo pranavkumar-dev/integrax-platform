@@ -4,8 +4,393 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IntegraX | Government Cross-Agency Interoperability Platform</title>
-  <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --gov-navy: #0a2540;
+      --gov-blue: #155799;
+      --gov-gold: #f59e0b;
+      --accent: #2563eb;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --green: #16a34a;
+      --green-bg: #dcfce7;
+      --amber: #d97706;
+      --amber-bg: #fef3c7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Top Government Header */
+    .gov-header {
+      background: var(--gov-navy);
+      color: white;
+      border-bottom: 4px solid var(--gov-gold);
+      padding: 1rem 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .emblem {
+      font-size: 2.2rem;
+      color: var(--gov-gold);
+    }
+    .brand-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: block;
+    }
+    .brand-sub {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* Desk Switcher Buttons */
+    .desk-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .desk-nav-label {
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .desk-tabs {
+      display: flex;
+      gap: 0.4rem;
+      background: rgba(255,255,255,0.1);
+      padding: 4px;
+      border-radius: 8px;
+    }
+    .desk-tab {
+      background: transparent;
+      border: none;
+      color: #e2e8f0;
+      padding: 0.6rem 1.1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .desk-tab:hover {
+      color: white;
+      background: rgba(255,255,255,0.15);
+    }
+    .desk-tab.active {
+      background: var(--gov-gold);
+      color: #000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Main Container & Desk Panels */
+    .main-container {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 1.5rem auto;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .desk-panel {
+      display: none;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+    .desk-panel.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Banner Cards */
+    .panel-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 5px solid var(--gov-blue);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .panel-banner h2 {
+      font-size: 1.35rem;
+      color: var(--gov-navy);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .panel-banner p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .badge-verified {
+      background: var(--green-bg);
+      color: var(--green);
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .badge-system {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    /* Grid Layouts */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media(max-width: 950px) {
+      .grid-2col { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card-title {
+      font-size: 1.05rem;
+      color: var(--gov-navy);
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      background: #ffffff;
+      color: var(--text);
+    }
+    .form-group input[readonly] {
+      background: #f8fafc;
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .consent-alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 6px;
+      padding: 0.85rem;
+      margin: 1rem 0;
+      font-size: 0.8rem;
+      color: #92400e;
+      line-height: 1.4;
+    }
+    .consent-alert input {
+      margin-top: 2px;
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.65rem 1.2rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--gov-blue);
+      color: white;
+      width: 100%;
+      justify-content: center;
+    }
+    .btn-primary:hover {
+      background: #0f3d68;
+    }
+    .btn-sm-action {
+      background: var(--green);
+      color: white;
+      padding: 0.4rem 0.85rem;
+      font-size: 0.78rem;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 600;
+    }
+    .btn-sm-action:hover {
+      background: #15803d;
+    }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+    }
+    .gov-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+    .gov-table th {
+      background: #f8fafc;
+      padding: 0.85rem 1rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+    .gov-table td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .gov-table tr:hover {
+      background: #fafbfc;
+    }
+
+    .badge-status {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-status.approved {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+    .badge-status.pending {
+      background: var(--amber-bg);
+      color: var(--amber);
+    }
+
+    /* Citizen Application Item Cards */
+    .app-card-item {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem;
+      margin-bottom: 0.85rem;
+      background: #fbfcfd;
+      transition: border-color 0.2s;
+    }
+    .app-card-item:hover {
+      border-color: #94a3b8;
+    }
+    .app-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .app-card-head h4 {
+      font-size: 0.95rem;
+      color: var(--gov-navy);
+      font-weight: 700;
+    }
+    .app-card-body {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Bottom Live Audit Bar */
+    .audit-bar {
+      background: var(--gov-navy);
+      color: #94a3b8;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .audit-bar i {
+      color: var(--gov-gold);
+      font-size: 1rem;
+    }
+    .audit-msg {
+      color: #38bdf8;
+      font-family: monospace;
+      font-size: 0.82rem;
+    }
+  </style>
 </head>
 <body>
 
@@ -19,14 +404,12 @@
           <span class="brand-sub">Federated Multi-Agency Service Delivery & Master Data Engine</span>
         </div>
       </div>
-      <div class="header-right">
-        <div class="persona-switch">
-          <label><i class="fa-solid fa-users-gear"></i> Active Desk:</label>
-          <div class="desk-tabs">
-            <button class="desk-tab active" data-desk="citizen"><i class="fa-solid fa-user"></i> Citizen Portal</button>
-            <button class="desk-tab" data-desk="revenue"><i class="fa-solid fa-file-invoice-dollar"></i> Revenue Desk</button>
-            <button class="desk-tab" data-desk="scholarship"><i class="fa-solid fa-graduation-cap"></i> Scholarship Desk</button>
-          </div>
+      <div class="desk-nav">
+        <span class="desk-nav-label">Switch Desk:</span>
+        <div class="desk-tabs">
+          <button class="desk-tab active" data-desk="citizen"><i class="fa-solid fa-user"></i> Citizen Portal</button>
+          <button class="desk-tab" data-desk="revenue"><i class="fa-solid fa-landmark"></i> Revenue Desk</button>
+          <button class="desk-tab" data-desk="scholarship"><i class="fa-solid fa-graduation-cap"></i> Scholarship Desk</button>
         </div>
       </div>
     </div>
@@ -36,23 +419,23 @@
 
     <!-- ================= CITIZEN PORTAL ================= -->
     <section id="desk-citizen" class="desk-panel active">
-      <div class="panel-header">
+      <div class="panel-banner">
         <div>
           <h2><i class="fa-solid fa-address-card"></i> Citizen Unified Service & Tracking Portal</h2>
-          <p class="text-muted">Zero Duplicate Submissions • Single Citizen Identity • Consent-Driven Federated Records</p>
+          <p>Zero Duplicate Submissions • Single Citizen Identity • Consent-Driven Federated Records</p>
         </div>
-        <div class="citizen-badge">
-          <span>Citizen: <strong>Ramesh S. (IN-8921-X)</strong></span>
-          <span class="pill-verified"><i class="fa-solid fa-circle-check"></i> Master Registry Synced</span>
+        <div>
+          <span style="font-size: 0.85rem; margin-right: 0.5rem; font-weight: 600;">Citizen ID: IN-8921-X</span>
+          <span class="badge-verified"><i class="fa-solid fa-circle-check"></i> Master Registry Synced</span>
         </div>
       </div>
 
       <div class="grid-2col">
         <!-- New Application Form -->
         <div class="card">
-          <div class="card-head">
-            <h3><i class="fa-solid fa-file-circle-plus"></i> Submit Scheme Application</h3>
-            <span class="badge-auto"><i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Populated via Federated ID</span>
+          <div class="card-title">
+            <span><i class="fa-solid fa-file-circle-plus"></i> Submit Scheme Application</span>
+            <span style="font-size:0.75rem; color:var(--accent); font-weight:600;"><i class="fa-solid fa-bolt"></i> Auto-Populated</span>
           </div>
           <form id="citizen-apply-form">
             <div class="form-group">
@@ -72,18 +455,18 @@
             <div class="form-group">
               <label>Select Target Welfare Scheme</label>
               <select id="cit-scheme" required>
-                <option value="Higher Education Grant Scheme">Higher Education Merit Grant (Handled by Scholarship Desk)</option>
+                <option value="Higher Education Merit Grant Scheme">Higher Education Merit Grant (Handled by Scholarship Desk)</option>
                 <option value="Agricultural Land Tax Exemption">Agricultural Land Tax Exemption (Handled by Revenue Desk)</option>
                 <option value="Social Welfare Rural Aid">Social Welfare Rural Aid</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Declared Annual Income (INR)</label>
+              <label>Declared Annual Family Income (INR)</label>
               <input type="number" id="cit-income" value="180000" required>
             </div>
-            <div class="consent-box">
+            <div class="consent-alert">
               <input type="checkbox" id="cit-consent" checked required>
-              <label for="cit-consent">I provide digital consent for IntegraX Middleware to cross-verify my Land, Income, and Academic credentials across departments without requiring manual physical submissions.</label>
+              <label for="cit-consent">I grant consent to IntegraX Middleware to cross-verify Land Records, Income Certificates, and Academic Registries via Federated Bus without requiring physical paper submissions.</label>
             </div>
             <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Federated Application</button>
           </form>
@@ -91,11 +474,11 @@
 
         <!-- Unified Tracking Status -->
         <div class="card">
-          <div class="card-head">
-            <h3><i class="fa-solid fa-list-check"></i> Your Applications Across All Departments</h3>
+          <div class="card-title">
+            <span><i class="fa-solid fa-list-check"></i> Unified Tracking Across All Departments</span>
           </div>
-          <div class="application-list" id="citizen-apps-list">
-            <!-- Rendered by JS -->
+          <div id="citizen-apps-list">
+            <!-- Populated by JS -->
           </div>
         </div>
       </div>
@@ -103,88 +486,291 @@
 
     <!-- ================= REVENUE DESK ================= -->
     <section id="desk-revenue" class="desk-panel">
-      <div class="panel-header">
+      <div class="panel-banner">
         <div>
-          <h2><i class="fa-solid fa-building-columns"></i> Revenue & Land Records Verification Desk</h2>
-          <p class="text-muted">Interoperable verification of Land Holdings, Property Tax Status, and Encumbrance Certificates.</p>
+          <h2><i class="fa-solid fa-landmark"></i> Revenue & Land Records Verification Desk</h2>
+          <p>Interoperable verification of Land Holdings, Property Tax Status, and Encumbrance Certificates.</p>
         </div>
-        <div class="desk-stats">
-          <span class="stat-tag">Legacy SOAP Transpiler: <strong>Online</strong></span>
-          <span class="stat-tag">SQL CDC Adapter: <strong>Active (14ms)</strong></span>
+        <div style="display: flex; gap: 0.5rem;">
+          <span class="badge-system">Legacy SOAP Transpiler: <strong>Online</strong></span>
+          <span class="badge-system">SQL CDC Adapter: <strong>14ms</strong></span>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-head">
-          <h3>Pending Revenue Review Queue</h3>
-          <span class="text-muted" id="rev-count">3 Applications</span>
+        <div class="card-title">
+          <span>Pending Revenue Review Queue</span>
+          <span id="rev-count" style="font-size:0.8rem; color:var(--text-muted);">Loading...</span>
         </div>
-        <table class="gov-table">
-          <thead>
-            <tr>
-              <th>App ID</th>
-              <th>Citizen ID & Name</th>
-              <th>Requested Scheme</th>
-              <th>Legacy Land DB Record</th>
-              <th>Declared Income</th>
-              <th>Cross-Agency Status</th>
-              <th>Officer Action</th>
-            </tr>
-          </thead>
-          <tbody id="revenue-table-body">
-            <!-- Rendered by JS -->
-          </tbody>
-        </table>
+        <div class="table-container">
+          <table class="gov-table">
+            <thead>
+              <tr>
+                <th>App ID</th>
+                <th>Citizen Details</th>
+                <th>Requested Scheme</th>
+                <th>Legacy Land Record</th>
+                <th>Declared Income</th>
+                <th>Verification Status</th>
+                <th>Officer Action</th>
+              </tr>
+            </thead>
+            <tbody id="revenue-table-body">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
     <!-- ================= SCHOLARSHIP DESK ================= -->
     <section id="desk-scholarship" class="desk-panel">
-      <div class="panel-header">
+      <div class="panel-banner">
         <div>
-          <h2><i class="fa-solid fa-award"></i> Department of Education & Scholarship Desk</h2>
-          <p class="text-muted">Master Data Interoperability with Revenue & Academic Repositories for Auto-Entitlement Verification.</p>
+          <h2><i class="fa-solid fa-graduation-cap"></i> Department of Education & Scholarship Desk</h2>
+          <p>Master Data Interoperability with Revenue & Academic Repositories for Auto-Entitlement Verification.</p>
         </div>
-        <div class="desk-stats">
-          <span class="stat-tag">Digi-Locker API: <strong>Connected</strong></span>
-          <span class="stat-tag">DBT Payment Bridge: <strong>Ready</strong></span>
+        <div style="display: flex; gap: 0.5rem;">
+          <span class="badge-system">DigiLocker API: <strong>Connected</strong></span>
+          <span class="badge-system">DBT Payment Bridge: <strong>Ready</strong></span>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-head">
-          <h3>Scholarship Applications Verification Queue</h3>
-          <span class="text-muted" id="sch-count">3 Applications</span>
+        <div class="card-title">
+          <span>Scholarship Applications Verification Queue</span>
+          <span id="sch-count" style="font-size:0.8rem; color:var(--text-muted);">Loading...</span>
         </div>
-        <table class="gov-table">
-          <thead>
-            <tr>
-              <th>App ID</th>
-              <th>Citizen ID & Name</th>
-              <th>Target Scheme</th>
-              <th>Revenue Desk Income Verification</th>
-              <th>Academic Record Match</th>
-              <th>Direct Benefit Transfer Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="scholarship-table-body">
-            <!-- Rendered by JS -->
-          </tbody>
-        </table>
+        <div class="table-container">
+          <table class="gov-table">
+            <thead>
+              <tr>
+                <th>App ID</th>
+                <th>Beneficiary Details</th>
+                <th>Target Scheme</th>
+                <th>Revenue Desk Income Sync</th>
+                <th>Academic Record</th>
+                <th>DBT Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="scholarship-table-body">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
-    <!-- Cross-Agency Live Log Feed at Bottom -->
-    <footer class="audit-strip">
-      <div class="audit-head">
-        <span><i class="fa-solid fa-shield-halved"></i> Live Federated Audit Trail:</span>
-        <span id="audit-latest" class="audit-ticker">Syncing cross-department data exchange events...</span>
-      </div>
+    <!-- Live Federated Audit Trail Bar -->
+    <footer class="audit-bar">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span style="font-weight: 600; color: white;">Federated Audit Bus:</span>
+      <span id="audit-latest" class="audit-msg">System initialized. Listening for cross-department data exchange events...</span>
     </footer>
 
   </main>
 
-  <script src="app.js"></script>
+  <script>
+    // --- Initial Shared Mock Data Layer ---
+    const DEFAULT_APPLICATIONS = [
+      {
+        id: "APP-REV-101",
+        citizenId: "IN-8921-X",
+        citizenName: "Ramesh Sharma",
+        scheme: "Agricultural Land Tax Exemption",
+        dept: "Revenue",
+        income: 180000,
+        landRecord: "Survey #402 (2.4 Acres - Verified)",
+        status: "Pending Verification",
+        academicRecord: "N/A",
+        dbtStatus: "Awaiting Clearance"
+      },
+      {
+        id: "APP-SCH-204",
+        citizenId: "IN-8921-X",
+        citizenName: "Ramesh Sharma (Child: Aarav S.)",
+        scheme: "Higher Education Merit Grant Scheme",
+        dept: "Scholarship",
+        income: 180000,
+        landRecord: "Verified via Revenue Bus",
+        status: "Pending Income Clearance",
+        academicRecord: "CGPA 9.2 (DigiLocker Verified)",
+        dbtStatus: "Staged for Direct Transfer"
+      },
+      {
+        id: "APP-REV-099",
+        citizenId: "IN-4412-K",
+        citizenName: "Sunita Verma",
+        scheme: "Agricultural Land Tax Exemption",
+        dept: "Revenue",
+        income: 240000,
+        landRecord: "Survey #119 (Disputed Ownership)",
+        status: "Pending Verification",
+        academicRecord: "N/A",
+        dbtStatus: "N/A"
+      }
+    ];
+
+    function getApps() {
+      const data = localStorage.getItem("integrax_apps");
+      return data ? JSON.parse(data) : DEFAULT_APPLICATIONS;
+    }
+
+    function saveApps(apps) {
+      localStorage.setItem("integrax_apps", JSON.stringify(apps));
+    }
+
+    function updateAudit(text) {
+      document.getElementById("audit-latest").textContent = `${new Date().toLocaleTimeString()} → ${text}`;
+    }
+
+    // Desk Switcher Tab Handler
+    document.querySelectorAll(".desk-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".desk-tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".desk-panel").forEach(p => p.classList.remove("active"));
+
+        tab.classList.add("active");
+        const targetDesk = tab.getAttribute("data-desk");
+        document.getElementById(`desk-${targetDesk}`).classList.add("active");
+      });
+    });
+
+    // Render Citizen Portal
+    function renderCitizenPortal() {
+      const apps = getApps().filter(a => a.citizenId === "IN-8921-X");
+      const container = document.getElementById("citizen-apps-list");
+      
+      if (apps.length === 0) {
+        container.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem;">No active applications filed.</p>`;
+        return;
+      }
+
+      container.innerHTML = apps.map(app => `
+        <div class="app-card-item">
+          <div class="app-card-head">
+            <h4>${app.scheme}</h4>
+            <span class="badge-status ${app.status.includes('Approved') ? 'approved' : 'pending'}">${app.status}</span>
+          </div>
+          <div class="app-card-body">
+            <div>Application ID: <strong>${app.id}</strong> • Desk: <strong>${app.dept}</strong></div>
+            <div>Cross-Verified Income: ₹${app.income.toLocaleString()} (${app.landRecord})</div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // Render Revenue Desk
+    function renderRevenueDesk() {
+      const apps = getApps();
+      const tbody = document.getElementById("revenue-table-body");
+      const revApps = apps.filter(a => a.dept === "Revenue" || a.scheme.includes("Land") || a.scheme.includes("Tax"));
+
+      document.getElementById("rev-count").textContent = `${revApps.length} Applications Total`;
+
+      tbody.innerHTML = revApps.map(app => `
+        <tr>
+          <td><strong>${app.id}</strong></td>
+          <td>${app.citizenName}<br><small style="color:var(--text-muted);">${app.citizenId}</small></td>
+          <td>${app.scheme}</td>
+          <td><code style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">${app.landRecord}</code></td>
+          <td>₹${app.income.toLocaleString()}</td>
+          <td><span class="badge-status ${app.status.includes('Approved') ? 'approved' : 'pending'}">${app.status}</span></td>
+          <td>
+            ${app.status.includes('Approved') ? 
+              `<span style="color:var(--green); font-weight:600; font-size:0.8rem;"><i class="fa-solid fa-check-double"></i> Verified</span>` : 
+              `<button class="btn-sm-action" onclick="approveRevenue('${app.id}')"><i class="fa-solid fa-stamp"></i> Verify & Sign</button>`
+            }
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    // Render Scholarship Desk
+    function renderScholarshipDesk() {
+      const apps = getApps();
+      const tbody = document.getElementById("scholarship-table-body");
+      const schApps = apps.filter(a => a.dept === "Scholarship" || a.scheme.includes("Education") || a.scheme.includes("Grant"));
+
+      document.getElementById("sch-count").textContent = `${schApps.length} Applications Total`;
+
+      tbody.innerHTML = schApps.map(app => `
+        <tr>
+          <td><strong>${app.id}</strong></td>
+          <td>${app.citizenName}<br><small style="color:var(--text-muted);">${app.citizenId}</small></td>
+          <td>${app.scheme}</td>
+          <td><span class="badge-status ${app.status.includes('Approved') ? 'approved' : 'pending'}">${app.status.includes('Approved') ? 'Verified by Revenue' : 'Awaiting Revenue Sync'}</span></td>
+          <td><code style="background:#f1f5f9; padding:2px 6px; border-radius:4px;">${app.academicRecord}</code></td>
+          <td>${app.dbtStatus}</td>
+          <td>
+            ${app.status.includes('Sanctioned') || app.dbtStatus.includes('Disbursed') ? 
+              `<span style="color:var(--green); font-weight:600; font-size:0.8rem;"><i class="fa-solid fa-check"></i> Disbursed</span>` : 
+              `<button class="btn-sm-action" onclick="sanctionScholarship('${app.id}')"><i class="fa-solid fa-coins"></i> Disburse DBT</button>`
+            }
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    // Actions
+    window.approveRevenue = function(id) {
+      const apps = getApps();
+      const target = apps.find(a => a.id === id);
+      if (target) {
+        target.status = "Approved by Revenue Officer";
+        saveApps(apps);
+        updateAudit(`Revenue Officer signed off on land/income verification for ${target.citizenId} (${target.id})`);
+        renderAll();
+      }
+    };
+
+    window.sanctionScholarship = function(id) {
+      const apps = getApps();
+      const target = apps.find(a => a.id === id);
+      if (target) {
+        target.status = "Grant Sanctioned & Approved";
+        target.dbtStatus = "Disbursed via Aadhaar DBT Bridge";
+        saveApps(apps);
+        updateAudit(`Scholarship Desk triggered DBT payment for ${target.citizenId} (${target.id})`);
+        renderAll();
+      }
+    };
+
+    // Form Submit
+    document.getElementById("citizen-apply-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const apps = getApps();
+      const scheme = document.getElementById("cit-scheme").value;
+      const isRevenue = scheme.includes("Tax") || scheme.includes("Land");
+
+      const newApp = {
+        id: `APP-${isRevenue ? 'REV' : 'SCH'}-${Math.floor(300 + Math.random() * 600)}`,
+        citizenId: document.getElementById("cit-id").value,
+        citizenName: document.getElementById("cit-name").value,
+        scheme: scheme,
+        dept: isRevenue ? "Revenue" : "Scholarship",
+        income: Number(document.getElementById("cit-income").value),
+        landRecord: "Survey #402 (Federated Registry Confirmed)",
+        status: "Pending Verification",
+        academicRecord: "Class 12: 89.6% (Fetched via DigiLocker)",
+        dbtStatus: "Pending Approval"
+      };
+
+      apps.unshift(newApp);
+      saveApps(apps);
+      updateAudit(`Citizen ${newApp.citizenId} submitted unified application ${newApp.id} for ${newApp.scheme}`);
+      renderAll();
+      alert(`Application ${newApp.id} successfully lodged into the federated interoperability bus!`);
+    });
+
+    function renderAll() {
+      renderCitizenPortal();
+      renderRevenueDesk();
+      renderScholarshipDesk();
+    }
+
+    renderAll();
+  </script>
 </body>
 </html>
