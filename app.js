@@ -1,173 +1,197 @@
-const INITIAL_DATA = {
-  workflows: [
-    { id: "TXN-8092", citizenId: "IN-8921-X", scheme: "Unified Social Welfare Pension", agencies: ["Revenue Dept", "PDS Portal", "Labour Registry"], status: "Resolved", sla: "100% On-Time" },
-    { id: "TXN-8093", citizenId: "IN-4412-K", scheme: "Cross-Entity Land Transfer NOC", agencies: ["Registration Dept", "Municipal Corp", "Survey Org"], status: "In-Progress", sla: "1.2 Days Left" },
-    { id: "TXN-8094", citizenId: "IN-1209-A", scheme: "Post-Metric Student Scholarship", agencies: ["Higher Ed Portal", "Caste Registry", "Direct Benefit Transfer"], status: "Resolved", sla: "100% On-Time" }
-  ],
-  connectors: [
-    { name: "State Land Registry", type: "Legacy SOAP / WSDL", protocol: "XML to JSON-LD Transpiler", health: "99.9%", latency: "42ms" },
-    { name: "Public Distribution System (PDS)", type: "Direct SQL Adapter", protocol: "CDC Replication Bridge", health: "99.4%", latency: "18ms" },
-    { name: "Labour Beneficiary Database", type: "Modern REST / OpenAPI", protocol: "JWT Bearer Federated SSO", health: "100%", latency: "12ms" },
-    { name: "Citizen Digi-Identity Master", type: "gRPC Microservice", protocol: "Consent Artifact Tokenizer", health: "100%", latency: "8ms" }
-  ],
-  citizenData: {
-    "IN-8921-X": {
-      name: "Ramesh Sharma",
-      dob: "1982-08-14",
-      verifiedRegistries: ["Revenue Registry", "UID Card Authority", "PDS Food Portal"],
-      entitlements: [
-        { name: "Farmer Fertiliser Grant", status: "Active / Disbursed", provider: "Agriculture Dept" },
-        { name: "Subsidized Food Grain Card", status: "Active (Synced)", provider: "Food & Civil Supplies" },
-        { name: "Rural Housing Assistance", status: "Under Inter-Agency Review", provider: "Rural Development" }
-      ]
-    }
+// --- Initial Shared Mock Data Layer ---
+const DEFAULT_APPLICATIONS = [
+  {
+    id: "APP-REV-101",
+    citizenId: "IN-8921-X",
+    citizenName: "Ramesh Sharma",
+    scheme: "Agricultural Land Tax Exemption",
+    dept: "Revenue",
+    income: 180000,
+    landRecord: "Survey #402 (2.4 Acres - Verified)",
+    status: "Pending Verification",
+    academicRecord: "N/A",
+    dbtStatus: "Awaiting Clearance"
   },
-  auditLogs: [
-    { timestamp: new Date(Date.now() - 3600000).toLocaleTimeString(), action: "CROSS_QUERY_VERIFICATION", actor: "Officer #8291 (Revenue)", schema: "LabourRegistry_v2", consent: "Valid (Artifact #991)", hash: "8f7a9d20c31e9a..." },
-    { timestamp: new Date(Date.now() - 1800000).toLocaleTimeString(), action: "SCHEMA_NORMALIZATION", actor: "System Adapter: PDS", schema: "XML_SOAP_Standard", consent: "N/A (Internal Sync)", hash: "b21c4598a72f01..." }
-  ]
-};
+  {
+    id: "APP-SCH-204",
+    citizenId: "IN-8921-X",
+    citizenName: "Ramesh Sharma (Child: Aarav S.)",
+    scheme: "Higher Education Merit Grant Scheme",
+    dept: "Scholarship",
+    income: 180000,
+    landRecord: "Verified via Revenue Bus",
+    status: "Pending Income Clearance",
+    academicRecord: "CGPA 9.2 (DigiLocker Verified)",
+    dbtStatus: "Staged for Direct Transfer"
+  },
+  {
+    id: "APP-REV-099",
+    citizenId: "IN-4412-K",
+    citizenName: "Sunita Verma",
+    scheme: "Agricultural Land Tax Exemption",
+    dept: "Revenue",
+    income: 240000,
+    landRecord: "Survey #119 (Disputed Ownership)",
+    status: "Pending Verification",
+    academicRecord: "N/A",
+    dbtStatus: "N/A"
+  }
+];
 
-function getData(key) {
-  const data = localStorage.getItem(`integrax_${key}`);
-  return data ? JSON.parse(data) : INITIAL_DATA[key];
+function getApps() {
+  const data = localStorage.getItem("integrax_apps");
+  return data ? JSON.parse(data) : DEFAULT_APPLICATIONS;
 }
 
-function setData(key, val) {
-  localStorage.setItem(`integrax_${key}`, JSON.stringify(val));
+function saveApps(apps) {
+  localStorage.setItem("integrax_apps", JSON.stringify(apps));
 }
 
-document.querySelectorAll(".nav-links li").forEach(tab => {
+function updateAudit(text) {
+  document.getElementById("audit-latest").textContent = `${new Date().toLocaleTimeString()} → ${text}`;
+}
+
+// Desk Switcher Navigation
+document.querySelectorAll(".desk-tab").forEach(tab => {
   tab.addEventListener("click", () => {
-    document.querySelectorAll(".nav-links li").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active"));
-    
+    document.querySelectorAll(".desk-tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".desk-panel").forEach(p => p.classList.remove("active"));
+
     tab.classList.add("active");
-    const target = tab.getAttribute("data-view");
-    document.getElementById(`view-${target}`).classList.add("active");
+    const targetDesk = tab.getAttribute("data-desk");
+    document.getElementById(`desk-${targetDesk}`).classList.add("active");
   });
 });
 
-function renderWorkflows() {
-  const workflows = getData("workflows");
-  const tbody = document.getElementById("workflow-tbody");
-  tbody.innerHTML = workflows.map(wf => `
-    <tr>
-      <td><strong>${wf.id}</strong></td>
-      <td>${wf.citizenId}</td>
-      <td>${wf.scheme}</td>
-      <td>${wf.agencies.map(a => `<span class="badge" style="background:#e2e8f0; padding:2px 6px; border-radius:4px; margin-right:4px;">${a}</span>`).join("")}</td>
-      <td><span class="status-pill ${wf.status === "Resolved" ? "success" : "pending"}">${wf.status}</span></td>
-      <td>${wf.sla}</td>
-    </tr>
-  `).join("");
-}
+// Render Citizen Portal
+function renderCitizenPortal() {
+  const apps = getApps().filter(a => a.citizenId === "IN-8921-X");
+  const container = document.getElementById("citizen-apps-list");
+  
+  if (apps.length === 0) {
+    container.innerHTML = `<p class="text-muted">No active applications filed.</p>`;
+    return;
+  }
 
-function renderAdapters() {
-  const connectors = getData("connectors");
-  const grid = document.getElementById("adapter-grid");
-  grid.innerHTML = connectors.map(c => `
-    <div class="adapter-card">
-      <div class="adapter-header">
-        <h4>${c.name}</h4>
-        <span class="badge online">${c.health}</span>
+  container.innerHTML = apps.map(app => `
+    <div class="app-item">
+      <div class="app-item-top">
+        <h4>${app.scheme}</h4>
+        <span class="status-badge ${app.status.includes('Approved') ? 'approved' : 'pending'}">${app.status}</span>
       </div>
-      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">Connector: <strong>${c.type}</strong></p>
-      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">Protocol: <strong>${c.protocol}</strong></p>
-      <p style="font-size:0.8rem; color:var(--success);">Round-Trip Latency: <strong>${c.latency}</strong></p>
+      <p class="app-meta">Application ID: <strong>${app.id}</strong> • Handled by: <strong>${app.dept} Desk</strong></p>
+      <p class="app-meta" style="margin-top:4px;">Cross-Verification: Income ₹${app.income.toLocaleString()} (${app.landRecord})</p>
     </div>
   `).join("");
 }
 
-function renderAuditLogs() {
-  const logs = getData("auditLogs");
-  const tbody = document.getElementById("audit-tbody");
-  tbody.innerHTML = logs.map(l => `
+// Render Revenue Desk
+function renderRevenueDesk() {
+  const apps = getApps();
+  const tbody = document.getElementById("revenue-table-body");
+  const revApps = apps.filter(a => a.dept === "Revenue" || a.scheme.includes("Land") || a.scheme.includes("Tax"));
+
+  document.getElementById("rev-count").textContent = `${revApps.length} Applications Total`;
+
+  tbody.innerHTML = revApps.map(app => `
     <tr>
-      <td>${l.timestamp}</td>
-      <td><code>${l.action}</code></td>
-      <td>${l.actor}</td>
-      <td>${l.schema}</td>
-      <td><span class="status-pill success">${l.consent}</span></td>
-      <td><small>${l.hash}</small></td>
+      <td><strong>${app.id}</strong></td>
+      <td>${app.citizenName} <br><small class="text-muted">${app.citizenId}</small></td>
+      <td>${app.scheme}</td>
+      <td><code>${app.landRecord}</code></td>
+      <td>₹${app.income.toLocaleString()}</td>
+      <td><span class="status-badge ${app.status.includes('Approved') ? 'approved' : 'pending'}">${app.status}</span></td>
+      <td>
+        ${app.status.includes('Approved') ? 
+          `<span style="color:var(--green); font-size:0.8rem;"><i class="fa-solid fa-check-double"></i> Verified</span>` : 
+          `<button class="btn btn-success" onclick="approveRevenue('${app.id}')"><i class="fa-solid fa-stamp"></i> Verify & Sign</button>`
+        }
+      </td>
     </tr>
   `).join("");
 }
 
-document.getElementById("btn-trigger-workflow").addEventListener("click", () => {
-  const workflows = getData("workflows");
-  const logs = getData("auditLogs");
-  
-  const newId = `TXN-${Math.floor(1000 + Math.random() * 9000)}`;
-  workflows.unshift({
-    id: newId,
-    citizenId: "IN-8921-X",
-    scheme: "Unified Citizen Grant Assessment",
-    agencies: ["Civil Registry", "Tax Board"],
-    status: "Resolved",
-    sla: "Completed Instantly"
-  });
+// Render Scholarship Desk
+function renderScholarshipDesk() {
+  const apps = getApps();
+  const tbody = document.getElementById("scholarship-table-body");
+  const schApps = apps.filter(a => a.dept === "Scholarship" || a.scheme.includes("Education") || a.scheme.includes("Grant"));
 
-  logs.unshift({
-    timestamp: new Date().toLocaleTimeString(),
-    action: "FEDERATED_AUTO_APPROVAL",
-    actor: "IntegraX Interop Engine",
-    schema: "UnifiedBeneficiary_v1",
-    consent: "Valid (Auto-Consent SSO)",
-    hash: Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b => b.toString(16).padStart(2, '0')).join('') + "..."
-  });
+  document.getElementById("sch-count").textContent = `${schApps.length} Applications Total`;
 
-  setData("workflows", workflows);
-  setData("auditLogs", logs);
+  tbody.innerHTML = schApps.map(app => `
+    <tr>
+      <td><strong>${app.id}</strong></td>
+      <td>${app.citizenName} <br><small class="text-muted">${app.citizenId}</small></td>
+      <td>${app.scheme}</td>
+      <td><span class="status-badge ${app.status.includes('Approved') ? 'approved' : 'pending'}">${app.status.includes('Approved') ? 'Verified by Revenue' : 'Awaiting Revenue Sync'}</span></td>
+      <td><code>${app.academicRecord}</code></td>
+      <td>${app.dbtStatus}</td>
+      <td>
+        ${app.status.includes('Sanctioned') || app.dbtStatus.includes('Disbursed') ? 
+          `<span style="color:var(--green); font-size:0.8rem;"><i class="fa-solid fa-check"></i> Grant Disbursed</span>` : 
+          `<button class="btn btn-success" onclick="sanctionScholarship('${app.id}')"><i class="fa-solid fa-coins"></i> Disburse DBT</button>`
+        }
+      </td>
+    </tr>
+  `).join("");
+}
 
-  renderWorkflows();
-  renderAuditLogs();
-});
-
-document.getElementById("btn-search-citizen").addEventListener("click", () => {
-  const id = document.getElementById("citizen-search-input").value.trim();
-  const records = INITIAL_DATA.citizenData[id];
-  const container = document.getElementById("citizen-results-area");
-
-  if (!records) {
-    container.innerHTML = `<p style="color:var(--warning);">No federated master data record found for Identifier: ${id}</p>`;
-    return;
+// Action Handlers
+window.approveRevenue = function(id) {
+  const apps = getApps();
+  const target = apps.find(a => a.id === id);
+  if (target) {
+    target.status = "Approved by Revenue Officer";
+    saveApps(apps);
+    updateAudit(`Revenue Officer signed off on land verification for ${target.citizenId} (${target.id})`);
+    renderAll();
   }
+};
 
-  container.innerHTML = `
-    <h4>Consolidated Profile: ${records.name} (DOB: ${records.dob})</h4>
-    <p style="font-size:0.85rem; color:var(--text-muted); margin:0.5rem 0 1rem;">
-      Cross-Verified In: ${records.verifiedRegistries.join(" • ")}
-    </p>
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Application Scheme</th>
-          <th>Provider Agency</th>
-          <th>Interoperable Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${records.entitlements.map(e => `
-          <tr>
-            <td><strong>${e.name}</strong></td>
-            <td>${e.provider}</td>
-            <td><span class="status-pill success">${e.status}</span></td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
+window.sanctionScholarship = function(id) {
+  const apps = getApps();
+  const target = apps.find(a => a.id === id);
+  if (target) {
+    target.status = "Grant Sanctioned & Approved";
+    target.dbtStatus = "Disbursed via Aadhaar DBT Bridge";
+    saveApps(apps);
+    updateAudit(`Scholarship Desk triggered DBT payment for ${target.citizenId} (${target.id})`);
+    renderAll();
+  }
+};
+
+// Citizen Form Submit
+document.getElementById("citizen-apply-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const apps = getApps();
+  const scheme = document.getElementById("cit-scheme").value;
+  const isRevenue = scheme.includes("Tax") || scheme.includes("Land");
+
+  const newApp = {
+    id: `APP-${isRevenue ? 'REV' : 'SCH'}-${Math.floor(300 + Math.random() * 600)}`,
+    citizenId: document.getElementById("cit-id").value,
+    citizenName: document.getElementById("cit-name").value,
+    scheme: scheme,
+    dept: isRevenue ? "Revenue" : "Scholarship",
+    income: Number(document.getElementById("cit-income").value),
+    landRecord: "Survey #402 (Federated Registry Confirmed)",
+    status: "Pending Verification",
+    academicRecord: "Class 12: 89.6% (Fetched via DigiLocker)",
+    dbtStatus: "Pending Approval"
+  };
+
+  apps.unshift(newApp);
+  saveApps(apps);
+  updateAudit(`Citizen ${newApp.citizenId} submitted unified application ${newApp.id} for ${newApp.scheme}`);
+  renderAll();
+  alert(`Application ${newApp.id} successfully lodged into the federated interoperability bus!`);
 });
 
-document.getElementById("btn-clear-logs").addEventListener("click", () => {
-  localStorage.removeItem("integrax_auditLogs");
-  localStorage.removeItem("integrax_workflows");
-  renderWorkflows();
-  renderAuditLogs();
-});
+function renderAll() {
+  renderCitizenPortal();
+  renderRevenueDesk();
+  renderScholarshipDesk();
+}
 
-renderWorkflows();
-renderAdapters();
-renderAuditLogs();
-document.getElementById("btn-search-citizen").click();
+renderAll();

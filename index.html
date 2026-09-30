@@ -3,145 +3,186 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IntegraX | Federated Data Interoperability Middleware</title>
+  <title>IntegraX | Government Cross-Agency Interoperability Platform</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-  <header class="top-nav">
-    <div class="brand">
-      <i class="fa-solid fa-network-wired"></i>
-      <div>
-        <span class="logo-title">IntegraX Middleware</span>
-        <span class="logo-subtitle">Federated Interoperability & Service Delivery Engine</span>
+  <!-- Top Global Government Bar -->
+  <header class="gov-header">
+    <div class="header-content">
+      <div class="brand">
+        <i class="fa-solid fa-landmark-flag emblem"></i>
+        <div>
+          <span class="brand-title">IntegraX Interoperability Grid</span>
+          <span class="brand-sub">Federated Multi-Agency Service Delivery & Master Data Engine</span>
+        </div>
       </div>
-    </div>
-    
-    <div class="nav-controls">
-      <div class="role-selector">
-        <label for="roleSwitch"><i class="fa-solid fa-user-shield"></i> Active Persona:</label>
-        <select id="roleSwitch">
-          <option value="officer">Department Officer (Workflow & Adapter Hub)</option>
-          <option value="citizen">Citizen (Single Sign-On & Unified Tracker)</option>
-          <option value="auditor">Compliance Auditor (Immutability & Logs)</option>
-        </select>
-      </div>
-      <div class="system-status">
-        <span class="badge online"><i class="fa-solid fa-circle"></i> Federated Bus: Active</span>
+      <div class="header-right">
+        <div class="persona-switch">
+          <label><i class="fa-solid fa-users-gear"></i> Active Desk:</label>
+          <div class="desk-tabs">
+            <button class="desk-tab active" data-desk="citizen"><i class="fa-solid fa-user"></i> Citizen Portal</button>
+            <button class="desk-tab" data-desk="revenue"><i class="fa-solid fa-file-invoice-dollar"></i> Revenue Desk</button>
+            <button class="desk-tab" data-desk="scholarship"><i class="fa-solid fa-graduation-cap"></i> Scholarship Desk</button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
 
-  <main class="dashboard-layout">
-    <aside class="sidebar">
-      <ul class="nav-links">
-        <li class="active" data-view="overview"><i class="fa-solid fa-chart-line"></i> Operational Overview</li>
-        <li data-view="orchestration"><i class="fa-solid fa-diagram-project"></i> Workflow Orchestration</li>
-        <li data-view="adapters"><i class="fa-solid fa-plug-circle-bolt"></i> Legacy & Modern Connectors</li>
-        <li data-view="citizen-tracker"><i class="fa-solid fa-id-card"></i> Unified Citizen Portal</li>
-        <li data-view="audit-log"><i class="fa-solid fa-fingerprint"></i> Immutable Audit Trail</li>
-      </ul>
-    </aside>
+  <main class="main-container">
 
-    <section class="content-panel">
-      <div id="view-overview" class="view-section active">
-        <div class="kpi-grid">
-          <div class="kpi-card">
-            <span class="kpi-label">Connected Departments</span>
-            <h2 id="kpi-departments">5 Active</h2>
-            <span class="kpi-sub"><i class="fa-solid fa-building-columns"></i> Revenue, Labour, Civil, PDS, UID</span>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">Data Duplication Prevented</span>
-            <h2>89.4%</h2>
-            <span class="kpi-sub positive"><i class="fa-solid fa-arrow-trend-up"></i> Golden Record Match Rate</span>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">Avg. Service Turnaround</span>
-            <h2>1.8 Days</h2>
-            <span class="kpi-sub positive"><i class="fa-solid fa-clock"></i> Down from 14 days baseline</span>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">Total Federated Inquiries</span>
-            <h2 id="kpi-queries">14,290</h2>
-            <span class="kpi-sub"><i class="fa-solid fa-bolt"></i> Live sync verified</span>
-          </div>
+    <!-- ================= CITIZEN PORTAL ================= -->
+    <section id="desk-citizen" class="desk-panel active">
+      <div class="panel-header">
+        <div>
+          <h2><i class="fa-solid fa-address-card"></i> Citizen Unified Service & Tracking Portal</h2>
+          <p class="text-muted">Zero Duplicate Submissions • Single Citizen Identity • Consent-Driven Federated Records</p>
         </div>
-
-        <div class="card-section">
-          <h3><i class="fa-solid fa-arrow-right-arrow-left"></i> Real-Time Interoperability Pipeline</h3>
-          <div class="pipeline-diagram">
-            <div class="pipe-node">Legacy SOAP / SQL Databases</div>
-            <div class="pipe-connector"><i class="fa-solid fa-arrow-right"></i> Schema Adapters <i class="fa-solid fa-arrow-right"></i></div>
-            <div class="pipe-node highlight">IntegraX Master Data Registry</div>
-            <div class="pipe-connector"><i class="fa-solid fa-arrow-right"></i> Consent Engine <i class="fa-solid fa-arrow-right"></i></div>
-            <div class="pipe-node">Unified Citizen Delivery</div>
-          </div>
+        <div class="citizen-badge">
+          <span>Citizen: <strong>Ramesh S. (IN-8921-X)</strong></span>
+          <span class="pill-verified"><i class="fa-solid fa-circle-check"></i> Master Registry Synced</span>
         </div>
       </div>
 
-      <div id="view-orchestration" class="view-section">
-        <div class="section-header">
-          <h3>Cross-Departmental Workflow Engine</h3>
-          <button class="btn btn-primary" id="btn-trigger-workflow"><i class="fa-solid fa-plus"></i> Simulate Multi-Agency Verification</button>
+      <div class="grid-2col">
+        <!-- New Application Form -->
+        <div class="card">
+          <div class="card-head">
+            <h3><i class="fa-solid fa-file-circle-plus"></i> Submit Scheme Application</h3>
+            <span class="badge-auto"><i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Populated via Federated ID</span>
+          </div>
+          <form id="citizen-apply-form">
+            <div class="form-group">
+              <label>Citizen Universal Identifier</label>
+              <input type="text" id="cit-id" value="IN-8921-X" readonly>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Full Legal Name</label>
+                <input type="text" id="cit-name" value="Ramesh Sharma" readonly>
+              </div>
+              <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="text" id="cit-dob" value="1982-08-14" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Select Target Welfare Scheme</label>
+              <select id="cit-scheme" required>
+                <option value="Higher Education Grant Scheme">Higher Education Merit Grant (Handled by Scholarship Desk)</option>
+                <option value="Agricultural Land Tax Exemption">Agricultural Land Tax Exemption (Handled by Revenue Desk)</option>
+                <option value="Social Welfare Rural Aid">Social Welfare Rural Aid</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Declared Annual Income (INR)</label>
+              <input type="number" id="cit-income" value="180000" required>
+            </div>
+            <div class="consent-box">
+              <input type="checkbox" id="cit-consent" checked required>
+              <label for="cit-consent">I provide digital consent for IntegraX Middleware to cross-verify my Land, Income, and Academic credentials across departments without requiring manual physical submissions.</label>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Submit Federated Application</button>
+          </form>
         </div>
-        <div class="card-section">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Service Transaction ID</th>
-                <th>Citizen ID</th>
-                <th>Workflow Scheme</th>
-                <th>Involved Entities</th>
-                <th>Data Validation Status</th>
-                <th>SLA Countdown</th>
-              </tr>
-            </thead>
-            <tbody id="workflow-tbody"></tbody>
-          </table>
-        </div>
-      </div>
 
-      <div id="view-adapters" class="view-section">
-        <h3>Heterogeneous System Connectors</h3>
-        <p class="section-desc">Zero-replacement integration layer standardizing legacy databases and modern REST endpoints into unified JSON-LD format.</p>
-        <div class="adapter-grid" id="adapter-grid"></div>
-      </div>
-
-      <div id="view-citizen-tracker" class="view-section">
-        <div class="section-header">
-          <h3>Unified Application Tracking & Consent Manager</h3>
-        </div>
-        <div class="tracker-search-box">
-          <input type="text" id="citizen-search-input" placeholder="Enter Citizen Universal ID (e.g., IN-8921-X)" value="IN-8921-X">
-          <button class="btn btn-secondary" id="btn-search-citizen"><i class="fa-solid fa-magnifying-glass"></i> Retrieve Federated Record</button>
-        </div>
-        <div id="citizen-results-area" class="card-section"></div>
-      </div>
-
-      <div id="view-audit-log" class="view-section">
-        <div class="section-header">
-          <h3>Cryptographic Audit Trail (Non-Repudiation)</h3>
-          <button class="btn btn-outline" id="btn-clear-logs"><i class="fa-solid fa-trash"></i> Reset Demo Logs</button>
-        </div>
-        <div class="card-section">
-          <table class="data-table log-table">
-            <thead>
-              <tr>
-                <th>Timestamp</th>
-                <th>Action</th>
-                <th>Source Actor</th>
-                <th>Target Schema</th>
-                <th>Consent Status</th>
-                <th>SHA-256 Checksum</th>
-              </tr>
-            </thead>
-            <tbody id="audit-tbody"></tbody>
-          </table>
+        <!-- Unified Tracking Status -->
+        <div class="card">
+          <div class="card-head">
+            <h3><i class="fa-solid fa-list-check"></i> Your Applications Across All Departments</h3>
+          </div>
+          <div class="application-list" id="citizen-apps-list">
+            <!-- Rendered by JS -->
+          </div>
         </div>
       </div>
     </section>
+
+    <!-- ================= REVENUE DESK ================= -->
+    <section id="desk-revenue" class="desk-panel">
+      <div class="panel-header">
+        <div>
+          <h2><i class="fa-solid fa-building-columns"></i> Revenue & Land Records Verification Desk</h2>
+          <p class="text-muted">Interoperable verification of Land Holdings, Property Tax Status, and Encumbrance Certificates.</p>
+        </div>
+        <div class="desk-stats">
+          <span class="stat-tag">Legacy SOAP Transpiler: <strong>Online</strong></span>
+          <span class="stat-tag">SQL CDC Adapter: <strong>Active (14ms)</strong></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Pending Revenue Review Queue</h3>
+          <span class="text-muted" id="rev-count">3 Applications</span>
+        </div>
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th>App ID</th>
+              <th>Citizen ID & Name</th>
+              <th>Requested Scheme</th>
+              <th>Legacy Land DB Record</th>
+              <th>Declared Income</th>
+              <th>Cross-Agency Status</th>
+              <th>Officer Action</th>
+            </tr>
+          </thead>
+          <tbody id="revenue-table-body">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================= SCHOLARSHIP DESK ================= -->
+    <section id="desk-scholarship" class="desk-panel">
+      <div class="panel-header">
+        <div>
+          <h2><i class="fa-solid fa-award"></i> Department of Education & Scholarship Desk</h2>
+          <p class="text-muted">Master Data Interoperability with Revenue & Academic Repositories for Auto-Entitlement Verification.</p>
+        </div>
+        <div class="desk-stats">
+          <span class="stat-tag">Digi-Locker API: <strong>Connected</strong></span>
+          <span class="stat-tag">DBT Payment Bridge: <strong>Ready</strong></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Scholarship Applications Verification Queue</h3>
+          <span class="text-muted" id="sch-count">3 Applications</span>
+        </div>
+        <table class="gov-table">
+          <thead>
+            <tr>
+              <th>App ID</th>
+              <th>Citizen ID & Name</th>
+              <th>Target Scheme</th>
+              <th>Revenue Desk Income Verification</th>
+              <th>Academic Record Match</th>
+              <th>Direct Benefit Transfer Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="scholarship-table-body">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Cross-Agency Live Log Feed at Bottom -->
+    <footer class="audit-strip">
+      <div class="audit-head">
+        <span><i class="fa-solid fa-shield-halved"></i> Live Federated Audit Trail:</span>
+        <span id="audit-latest" class="audit-ticker">Syncing cross-department data exchange events...</span>
+      </div>
+    </footer>
+
   </main>
 
   <script src="app.js"></script>
